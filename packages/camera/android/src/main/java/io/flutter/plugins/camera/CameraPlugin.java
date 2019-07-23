@@ -146,7 +146,7 @@ public class CameraPlugin implements MethodCallHandler {
         }
       case "takePicture":
         {
-          camera.takePicture((String) call.argument("path"), result);
+          camera.takePicture((String) call.argument("path"), (boolean) call.argument("useFlash"), result);
           break;
         }
       case "prepareForVideoRecording":
@@ -558,7 +558,11 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void takePicture(String filePath, @NonNull final Result result) {
+    private boolean hasFlash() {
+      return registrar.context().getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    }
+
+    private void takePicture(String filePath, boolean hasFlash, @NonNull final Result result) {
       final File file = new File(filePath);
 
       if (file.exists()) {
@@ -589,6 +593,11 @@ public class CameraPlugin implements MethodCallHandler {
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureBuilder.addTarget(pictureImageReader.getSurface());
         captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+
+        if (useFlash && hasFlash()) {
+          captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+          captureBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
+        }
 
         cameraCaptureSession.capture(
             captureBuilder.build(),

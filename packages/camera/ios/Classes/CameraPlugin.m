@@ -150,11 +150,12 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (void)start;
 - (void)stop;
+- (bool)hasFlash;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
-- (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)captureToFile:(NSString *)filename useFlash:(bool)useFlash result:(FlutterResult)result;
 @end
 
 @implementation FLTCam {
@@ -218,9 +219,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_captureSession stopRunning];
 }
 
-- (void)captureToFile:(NSString *)path result:(FlutterResult)result {
+- (bool)hasFlash {
+  AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+  return ([device hasTorch] && [device hasFlash]);
+}
+
+- (void)captureToFile:(NSString *)path useFlash:(bool)useFlash result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [settings setHighResolutionPhotoEnabled:YES];
+
+  if (useFlash && [self hasFlash]) {
+    [settings setFlashMode:AVCaptureFlashModeOn];
+  }
+
   [_capturePhotoOutput
       capturePhotoWithSettings:settings
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
@@ -730,7 +741,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
 
     if ([@"takePicture" isEqualToString:call.method]) {
-      [_camera captureToFile:call.arguments[@"path"] result:result];
+      [_camera captureToFile:call.arguments[@"path"] useFlash:[call.arguments[@"useFlash"] boolValue] result:result];
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
