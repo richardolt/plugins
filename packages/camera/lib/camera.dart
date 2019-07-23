@@ -292,6 +292,46 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  ///
+  /// Update the zoom scale of the camera preview
+  ///
+  Future<Null> updateZoomScale(double scale) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'takePicture was called on uninitialized CameraController',
+      );
+    }
+    try {
+      await _channel.invokeMethod(
+        'updateZoomScale',
+        <String, dynamic>{'scale': scale},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets the auto focus and auto exposure point.
+  ///
+  /// Throws a [CameraException] if the call fails.
+  Future<Null> setFocusPoint(Offset offset) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController.',
+        'takePicture was called on uninitialized CameraController',
+      );
+    }
+    try {
+      await _channel.invokeMethod(
+        'setFocusPoint',
+        <String, dynamic>{'offsetX': offset.dx, 'offsetY': offset.dy},
+      );
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
   /// Captures an image and saves it to [path].
   ///
   /// A path can for example be obtained using
