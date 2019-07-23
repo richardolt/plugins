@@ -737,6 +737,20 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     [_camera stopImageStream];
     result(nil);
   } else if ([@"updateZoomScale" isEqualToString:call.method]) {
+    double scale = [call.arguments[@"scale"] doubleValue];
+
+    [_camera.captureDevice lockForConfiguration:NULL];
+
+    CGFloat zoomBegin = _camera.captureDevice.videoZoomFactor;
+    CGFloat zoomMax = _camera.captureDevice.activeFormat.videoMaxZoomFactor;
+
+    CGFloat zoomTo = zoomBegin + (scale * 2 - 2);
+    int msc = (int)(((zoomTo+0.001)*100))%100;
+    zoomTo = (NSInteger)zoomTo + msc * 0.01;
+    zoomTo = fmaxf(1, fminf(zoomTo, zoomMax));
+
+    [_camera.captureDevice setVideoZoomFactor:zoomTo];
+    [_camera.captureDevice unlockForConfiguration];
   
     result(nil);
   } else if ([@"setFocusPoint" isEqualToString:call.method]) {
