@@ -736,6 +736,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     result(nil);
+  } else if ([@"updateZoomScale" isEqualToString:call.method]) {
+  
+    result(nil);
   } else if ([@"setFocusPoint" isEqualToString:call.method]) {
      NSNumber *offsetX = call.arguments[@"offsetX"];
      NSNumber *offsetY = call.arguments[@"offsetY"];
@@ -753,7 +756,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
      [_camera.captureDevice unlockForConfiguration];
      result(nil);
-     
+
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
