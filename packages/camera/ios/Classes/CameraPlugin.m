@@ -748,7 +748,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     zoomTo = (NSInteger)zoomTo + msc * 0.01;
     zoomTo = fmaxf(1, fminf(zoomTo, zoomMax));
 
-    [_camera.captureDevice setVideoZoomFactor:zoomTo];
+    [_camera.captureDevice setVideoZoomFactor:scale];
     [_camera.captureDevice unlockForConfiguration];
   
     result(nil);
