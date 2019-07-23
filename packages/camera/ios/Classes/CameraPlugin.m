@@ -740,14 +740,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     double scale = [call.arguments[@"scale"] doubleValue];
 
     [_camera.captureDevice lockForConfiguration:NULL];
-
-    CGFloat zoomMax = _camera.captureDevice.activeFormat.videoMaxZoomFactor;
-
-    CGFloat zoomTo = (scale * 2 - 2);
-    int msc = (int)((zoomTo+0.001)) % 10;
-    zoomTo = (NSInteger)zoomTo + msc * 0.01;
-    zoomTo = fmaxf(1, fminf(zoomTo, zoomMax));
-
     [_camera.captureDevice setVideoZoomFactor:scale];
     [_camera.captureDevice unlockForConfiguration];
   
