@@ -736,6 +736,24 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     result(nil);
+  } else if ([@"setFocusPoint" isEqualToString:call.method]) {
+     NSNumber *offsetX = call.arguments[@"offsetX"];
+     NSNumber *offsetY = call.arguments[@"offsetY"];
+    
+     [_camera.captureDevice lockForConfiguration:NULL];
+    
+     if ([_camera.captureDevice isFocusPointOfInterestSupported]) {
+         _camera.captureDevice.focusPointOfInterest = CGPointMake(offsetY.floatValue, 1 - offsetX.floatValue);
+        [_camera.captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+     }
+     if ([_camera.captureDevice isExposurePointOfInterestSupported]) {
+       _camera.captureDevice.exposurePointOfInterest = CGPointMake(offsetY.floatValue, 1 - offsetX.floatValue);
+      [_camera.captureDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+     }
+
+     [_camera.captureDevice unlockForConfiguration];
+     result(nil);
+     
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
