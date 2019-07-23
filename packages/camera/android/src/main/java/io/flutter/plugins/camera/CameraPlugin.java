@@ -562,7 +562,7 @@ public class CameraPlugin implements MethodCallHandler {
       return registrar.context().getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
-    private void takePicture(String filePath, boolean hasFlash, @NonNull final Result result) {
+    private void takePicture(String filePath, boolean useFlash, @NonNull final Result result) {
       final File file = new File(filePath);
 
       if (file.exists()) {
