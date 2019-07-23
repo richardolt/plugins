@@ -704,11 +704,7 @@ public class CameraPlugin implements MethodCallHandler {
                     captureBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
                 }
 
-                try {
-                  captureBuilder.set(CaptureRequest.SCALER_CROP_REGION, mScaleHelper.getRect());
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
+                captureBuilder.set(CaptureRequest.SCALER_CROP_REGION, mScaleHelper.getRect());
 
                 cameraCaptureSession.capture(
                         captureBuilder.build(),
